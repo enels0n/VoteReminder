@@ -98,6 +98,40 @@
         </article>
 
         <article class="surface">
+          <h2>Export server pack</h2>
+          <form class="form" data-export-pack-form>
+            <label>
+              <span>Pack name</span>
+              <input type="text" name="packName" placeholder="My server vote pack" required />
+            </label>
+
+            <label>
+              <span>Game</span>
+              <input type="text" name="game" placeholder="Minecraft" />
+            </label>
+
+            <label>
+              <span>Author</span>
+              <input type="text" name="author" placeholder="Server admin or project name" />
+            </label>
+
+            <label>
+              <span>Source URL</span>
+              <input type="url" name="sourceUrl" placeholder="https://example.com/vote-pack.json" />
+            </label>
+
+            <div class="actions">
+              <button class="button" type="submit">Download JSON</button>
+              <button class="button button--ghost" type="button" data-copy-pack>Copy JSON</button>
+            </div>
+
+            <p class="empty" data-export-status>
+              Exports current tracked targets without personal player nicknames.
+            </p>
+          </form>
+        </article>
+
+        <article class="surface">
           <h2>Reminder settings</h2>
           <div class="form">
             <label class="toggle">

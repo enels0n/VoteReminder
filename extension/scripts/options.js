@@ -1,4 +1,5 @@
 import { PRESETS } from "./constants.js";
+import { buildExportPack } from "./packs.js";
 import { inferSiteByUrl } from "./site-catalog.js";
 import {
   createTargetId,
@@ -17,15 +18,18 @@ const resetButton = document.querySelector("[data-reset-form]");
 const packFileInput = document.querySelector("[data-pack-file]");
 const importUrlForm = document.querySelector("[data-import-url-form]");
 const importStatus = document.querySelector("[data-import-status]");
+const exportPackForm = document.querySelector("[data-export-pack-form]");
+const copyPackButton = document.querySelector("[data-copy-pack]");
+const exportStatus = document.querySelector("[data-export-status]");
 const notificationsToggle = document.querySelector("[name='notificationsEnabled']");
 const repeatMinutesInput = document.querySelector("[name='reminderRepeatMinutes']");
 const snoozeMinutesInput = document.querySelector("[name='defaultSnoozeMinutes']");
 
 let editTargetId = null;
 
-function setImportStatus(message, isError = false) {
-  importStatus.textContent = message;
-  importStatus.style.color = isError ? "#991b1b" : "";
+function setStatus(node, message, isError = false) {
+  node.textContent = message;
+  node.style.color = isError ? "#991b1b" : "";
 }
 
 function applyPresetToForm(preset) {
@@ -57,10 +61,7 @@ function syncDerivedFieldsFromUrl() {
     form.elements.siteKey.value = inferredSite.key;
   }
 
-  if (
-    !form.elements.autofillMode.value ||
-    form.elements.autofillMode.value === "manual"
-  ) {
+  if (!form.elements.autofillMode.value || form.elements.autofillMode.value === "manual") {
     form.elements.autofillMode.value = inferredSite.autofillMode || "manual";
   }
 
@@ -220,7 +221,8 @@ async function importPackObject(pack, sourceLabel) {
     throw new Error(result?.error || "Import failed.");
   }
 
-  setImportStatus(
+  setStatus(
+    importStatus,
     `Imported "${result.pack.packName}": ${result.stats.added} added, ${result.stats.updated} updated.`
   );
   await render();
@@ -238,7 +240,7 @@ async function handlePackFileChange() {
     await importPackObject(json, file.name);
     packFileInput.value = "";
   } catch (error) {
-    setImportStatus(error?.message || "Could not import the selected file.", true);
+    setStatus(importStatus, error?.message || "Could not import the selected file.", true);
   }
 }
 
@@ -248,7 +250,7 @@ async function handleImportUrl(event) {
   const url = String(formData.get("packUrl") || "").trim();
 
   if (!url) {
-    setImportStatus("Enter a vote pack URL first.", true);
+    setStatus(importStatus, "Enter a vote pack URL first.", true);
     return;
   }
 
@@ -262,13 +264,64 @@ async function handleImportUrl(event) {
       throw new Error(result?.error || "Import failed.");
     }
 
-    setImportStatus(
+    setStatus(
+      importStatus,
       `Imported "${result.pack.packName}" from URL: ${result.stats.added} added, ${result.stats.updated} updated.`
     );
     importUrlForm.reset();
     await render();
   } catch (error) {
-    setImportStatus(error?.message || "Could not import the URL.", true);
+    setStatus(importStatus, error?.message || "Could not import the URL.", true);
+  }
+}
+
+async function buildPackJson() {
+  const formData = new FormData(exportPackForm);
+  const { targets } = await getStoredData();
+  const pack = buildExportPack(
+    {
+      packName: formData.get("packName"),
+      game: formData.get("game"),
+      author: formData.get("author"),
+      sourceUrl: formData.get("sourceUrl")
+    },
+    targets
+  );
+
+  return JSON.stringify(pack, null, 2);
+}
+
+async function handleExportDownload(event) {
+  event.preventDefault();
+
+  try {
+    const json = await buildPackJson();
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    const fileName = `${String(exportPackForm.elements.packName.value || "vote-pack")
+      .trim()
+      .replace(/[^a-z0-9-_]+/gi, "-")
+      .replace(/^-+|-+$/g, "") || "vote-pack"}.json`;
+
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
+
+    setStatus(exportStatus, `Downloaded ${fileName}.`);
+  } catch (error) {
+    setStatus(exportStatus, error?.message || "Could not export vote pack.", true);
+  }
+}
+
+async function handleCopyPack() {
+  try {
+    const json = await buildPackJson();
+    await navigator.clipboard.writeText(json);
+    setStatus(exportStatus, "Vote pack JSON copied to clipboard.");
+  } catch (error) {
+    setStatus(exportStatus, error?.message || "Could not copy vote pack JSON.", true);
   }
 }
 
@@ -280,7 +333,7 @@ async function render() {
   repeatMinutesInput.value = settings.reminderRepeatMinutes;
   snoozeMinutesInput.value = settings.defaultSnoozeMinutes;
 
-  if (targets.length === 0) {
+  if (!targets.length) {
     list.innerHTML = '<p class="empty">No vote targets yet. Add your first server page above or import a server pack.</p>';
     return;
   }
@@ -296,6 +349,8 @@ form.elements.url.addEventListener("blur", syncDerivedFieldsFromUrl);
 resetButton.addEventListener("click", resetForm);
 packFileInput.addEventListener("change", handlePackFileChange);
 importUrlForm.addEventListener("submit", handleImportUrl);
+exportPackForm.addEventListener("submit", handleExportDownload);
+copyPackButton.addEventListener("click", handleCopyPack);
 notificationsToggle.addEventListener("change", savePreferenceChanges);
 repeatMinutesInput.addEventListener("change", savePreferenceChanges);
 snoozeMinutesInput.addEventListener("change", savePreferenceChanges);

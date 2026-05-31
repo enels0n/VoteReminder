@@ -11,6 +11,7 @@ Chrome extension for reminding players to vote for favorite servers on rating si
 - Manage targets and presets from the options page.
 - Import a whole server pack from a local `vote-pack.json` file.
 - Import a server pack from a public URL.
+- Export the current tracked targets as a reusable `vote-pack.json` for players.
 - Accept import requests directly from a server website when the extension is installed.
 - Start a vote session that opens all currently available vote pages in one tab group.
 - Show a dedicated checklist page for the active voting session with progress and quick actions.
@@ -114,3 +115,4 @@ Fallback if the extension is not installed:
 - `nickname` and `autofillMode` are supported both in imported packs and in manual target editing.
 - The current autofill adapters cover `topg`, `hotmc`, `minecraftservers.org`, `minecraft-mp.com`, `TrackyServer`, `GameMonitoring`, plus a generic fallback.
 - Captcha is intentionally left for the player to solve manually.
+- Exported packs intentionally clear per-player nicknames so admin-created packs are safe to distribute.
