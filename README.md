@@ -15,6 +15,7 @@ Chrome extension for reminding players to vote for favorite servers on rating si
 - Start a vote session that opens all currently available vote pages in one tab group.
 - Show a dedicated checklist page for the active voting session with progress and quick actions.
 - Store a nickname and autofill mode per vote page for supported sites.
+- Auto-detect supported sites from the vote URL and suggest site-specific autofill behavior.
 
 ## Load in Chrome
 
@@ -47,6 +48,17 @@ Use [vote-pack.example.json](vote-pack.example.json) as a template.
   ]
 }
 ```
+
+Known built-in site presets currently focus on Minecraft and multi-game vote platforms:
+
+- `hotmc.ru`
+- `TopG`
+- `MinecraftServers.org`
+- `minecraft-mp.com`
+- `Planet Minecraft`
+- `ServerList.cc`
+- `TrackyServer`
+- `GameMonitoring`
 
 ## Website Integration
 
@@ -100,4 +112,5 @@ Fallback if the extension is not installed:
 - Different monitoring sites can have different cooldowns, so each target stores its own interval.
 - Notifications are checked every 30 minutes in the background and can repeat on a custom schedule.
 - `nickname` and `autofillMode` are supported both in imported packs and in manual target editing.
-- The first autofill adapters are generic plus lightweight handling for `topg` and `hotmc`. Captcha is intentionally left for the player to solve manually.
+- The current autofill adapters cover `topg`, `hotmc`, `minecraftservers.org`, `minecraft-mp.com`, `TrackyServer`, `GameMonitoring`, plus a generic fallback.
+- Captcha is intentionally left for the player to solve manually.

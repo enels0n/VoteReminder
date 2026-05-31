@@ -5,6 +5,7 @@
         'input[name="username"]',
         'input[name="nickname"]',
         'input[name="nick"]',
+        'input[id*="username" i]',
         'input[placeholder*="nickname" i]',
         'input[placeholder*="minecraft" i]'
       ]
@@ -17,15 +18,57 @@
         'input[placeholder*="minecraft" i]'
       ]
     },
+    minecraftservers: {
+      selectors: [
+        'input[name="minecraft_username"]',
+        'input[name="username"]',
+        'input[id*="minecraft" i]',
+        'input[placeholder*="minecraft" i]',
+        'input[placeholder*="username" i]'
+      ]
+    },
+    minecraftmp: {
+      selectors: [
+        'input[name="nickname"]',
+        'input[name="pseudo"]',
+        'input[name="username"]',
+        'input[id*="pseudo" i]',
+        'input[id*="username" i]',
+        'input[placeholder*="nickname" i]'
+      ]
+    },
+    trackyserver: {
+      selectors: [
+        'input[name="playername"]',
+        'input[name="username"]',
+        'input[name="nickname"]',
+        'input[id*="player" i]',
+        'input[id*="steam" i]',
+        'input[placeholder*="player" i]'
+      ]
+    },
+    gamemonitoring: {
+      selectors: [
+        'input[name="nick"]',
+        'input[name="nickname"]',
+        'input[name="username"]',
+        'input[id*="nickname" i]',
+        'input[id*="nick" i]',
+        'input[placeholder*="nickname" i]'
+      ]
+    },
     generic: {
       selectors: [
         'input[name="nickname"]',
         'input[name="nick"]',
         'input[name="username"]',
         'input[name="player"]',
+        'input[name="playername"]',
+        'input[name="minecraft_username"]',
         'input[id*="nickname" i]',
         'input[id*="nick" i]',
         'input[id*="username" i]',
+        'input[id*="player" i]',
         'input[placeholder*="nickname" i]',
         'input[placeholder*="nick" i]',
         'input[placeholder*="username" i]',

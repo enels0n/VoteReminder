@@ -1,4 +1,5 @@
 import { PRESETS } from "./constants.js";
+import { inferSiteByUrl } from "./site-catalog.js";
 import {
   createTargetId,
   formatRelativeTime,
@@ -27,20 +28,45 @@ function setImportStatus(message, isError = false) {
   importStatus.style.color = isError ? "#991b1b" : "";
 }
 
+function applyPresetToForm(preset) {
+  form.elements.title.value = preset.name;
+  form.elements.url.value = preset.urlHint;
+  form.elements.intervalHours.value = preset.intervalHours;
+  form.elements.siteKey.value = preset.key;
+  form.elements.autofillMode.value = preset.autofillMode || "manual";
+}
+
 function renderPresets() {
   PRESETS.forEach((preset) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "chip";
-    button.textContent = preset.name;
-    button.addEventListener("click", () => {
-      form.elements.title.value = preset.name;
-      form.elements.url.value = preset.urlHint;
-      form.elements.intervalHours.value = preset.intervalHours;
-      form.elements.siteKey.value = preset.key;
-    });
+    button.textContent = `${preset.name} (${preset.game})`;
+    button.addEventListener("click", () => applyPresetToForm(preset));
     presetContainer.appendChild(button);
   });
+}
+
+function syncDerivedFieldsFromUrl() {
+  const inferredSite = inferSiteByUrl(form.elements.url.value);
+  if (!inferredSite) {
+    return;
+  }
+
+  if (!form.elements.siteKey.value) {
+    form.elements.siteKey.value = inferredSite.key;
+  }
+
+  if (
+    !form.elements.autofillMode.value ||
+    form.elements.autofillMode.value === "manual"
+  ) {
+    form.elements.autofillMode.value = inferredSite.autofillMode || "manual";
+  }
+
+  if (!form.elements.title.value.trim()) {
+    form.elements.title.value = inferredSite.name;
+  }
 }
 
 function resetForm() {
@@ -140,18 +166,23 @@ async function saveFormTarget(event) {
   const currentTarget = editTargetId
     ? targets.find((item) => item.id === editTargetId)
     : null;
+  const url = String(formData.get("url") || "").trim();
+  const inferredSite = inferSiteByUrl(url);
+  const explicitSiteKey = String(formData.get("siteKey") || "").trim();
 
   const nextTarget = {
     id: editTargetId || createTargetId(),
     title: String(formData.get("title")).trim(),
-    url: String(formData.get("url")).trim(),
+    url,
     intervalHours: Number(formData.get("intervalHours") || 24),
-    siteKey: String(formData.get("siteKey") || "").trim(),
+    siteKey: explicitSiteKey || inferredSite?.key || "",
     nickname: String(formData.get("nickname") || "").trim(),
-    autofillMode: String(formData.get("autofillMode") || "manual").trim(),
+    autofillMode: String(
+      formData.get("autofillMode") || inferredSite?.autofillMode || "manual"
+    ).trim(),
     notes: String(formData.get("notes") || "").trim(),
     enabled: form.elements.enabled.checked,
-    game: currentTarget?.game || "",
+    game: currentTarget?.game || inferredSite?.game || "",
     packName: currentTarget?.packName || "",
     importSource: currentTarget?.importSource || "",
     lastVotedAt: currentTarget?.lastVotedAt || null,
@@ -261,6 +292,7 @@ async function render() {
 }
 
 form.addEventListener("submit", saveFormTarget);
+form.elements.url.addEventListener("blur", syncDerivedFieldsFromUrl);
 resetButton.addEventListener("click", resetForm);
 packFileInput.addEventListener("change", handlePackFileChange);
 importUrlForm.addEventListener("submit", handleImportUrl);
