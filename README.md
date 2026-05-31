@@ -20,6 +20,7 @@ Chrome extension for reminding players to vote for favorite servers on rating si
 - Show a dedicated checklist page for the active voting session with progress and quick actions.
 - Store a nickname and autofill mode per vote page for supported sites.
 - Auto-detect supported sites from the vote URL and suggest site-specific autofill behavior.
+- Show a built-in site directory with autofill, captcha, and flow hints for each monitoring site.
 
 ## Load in Chrome
 

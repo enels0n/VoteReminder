@@ -6,7 +6,13 @@ export const SITE_CATALOG = [
     intervalHours: 24,
     urlHint: "https://hotmc.ru/minecraft-server-12345",
     autofillMode: "prefill+focus",
-    domains: ["hotmc.ru"]
+    domains: ["hotmc.ru"],
+    capabilities: {
+      autofill: "good",
+      captcha: "likely",
+      complexity: "medium",
+      notes: "Usually a good fit for nickname prefill, but players should expect a manual captcha step."
+    }
   },
   {
     key: "topg",
@@ -15,7 +21,13 @@ export const SITE_CATALOG = [
     intervalHours: 24,
     urlHint: "https://topg.org/minecraft-servers/server-12345",
     autofillMode: "prefill",
-    domains: ["topg.org"]
+    domains: ["topg.org"],
+    capabilities: {
+      autofill: "good",
+      captcha: "possible",
+      complexity: "medium",
+      notes: "Solid general-purpose Minecraft vote target with straightforward nickname entry."
+    }
   },
   {
     key: "minecraftservers",
@@ -24,7 +36,13 @@ export const SITE_CATALOG = [
     intervalHours: 24,
     urlHint: "https://minecraftservers.org/server/12345",
     autofillMode: "prefill",
-    domains: ["minecraftservers.org"]
+    domains: ["minecraftservers.org"],
+    capabilities: {
+      autofill: "good",
+      captcha: "possible",
+      complexity: "medium",
+      notes: "Good candidate for global Minecraft packs where nickname entry matters."
+    }
   },
   {
     key: "minecraftmp",
@@ -33,7 +51,13 @@ export const SITE_CATALOG = [
     intervalHours: 24,
     urlHint: "https://minecraft-mp.com/server/12345/vote/",
     autofillMode: "prefill+focus",
-    domains: ["minecraft-mp.com"]
+    domains: ["minecraft-mp.com"],
+    capabilities: {
+      autofill: "good",
+      captcha: "likely",
+      complexity: "medium",
+      notes: "Works well with prefill-plus-focus because players often finish with a manual verification step."
+    }
   },
   {
     key: "planetminecraft",
@@ -42,7 +66,13 @@ export const SITE_CATALOG = [
     intervalHours: 24,
     urlHint: "https://www.planetminecraft.com/server/example/",
     autofillMode: "manual",
-    domains: ["planetminecraft.com"]
+    domains: ["planetminecraft.com"],
+    capabilities: {
+      autofill: "limited",
+      captcha: "unknown",
+      complexity: "higher",
+      notes: "Better treated as a manual-flow site until a dedicated adapter is added."
+    }
   },
   {
     key: "serverlistcc",
@@ -51,7 +81,13 @@ export const SITE_CATALOG = [
     intervalHours: 24,
     urlHint: "https://serverlist.cc/server/example/",
     autofillMode: "manual",
-    domains: ["serverlist.cc"]
+    domains: ["serverlist.cc"],
+    capabilities: {
+      autofill: "limited",
+      captcha: "unknown",
+      complexity: "higher",
+      notes: "Useful for reach, but currently best handled as a manual step in the vote session."
+    }
   },
   {
     key: "trackyserver",
@@ -61,7 +97,13 @@ export const SITE_CATALOG = [
     urlHint: "https://www.trackyserver.com/server/1234567",
     autofillMode: "prefill+focus",
     domains: ["trackyserver.com", "www.trackyserver.com"],
-    supportedGames: ["Minecraft", "Rust", "FiveM", "CS2"]
+    supportedGames: ["Minecraft", "Rust", "FiveM", "CS2"],
+    capabilities: {
+      autofill: "good",
+      captcha: "possible",
+      complexity: "medium",
+      notes: "Strong multi-game anchor site for compact packs across Minecraft, Rust, FiveM, and CS2."
+    }
   },
   {
     key: "gamemonitoring",
@@ -72,6 +114,13 @@ export const SITE_CATALOG = [
     autofillMode: "prefill+focus",
     domains: ["gamemonitoring.net"],
     supportedGames: ["Minecraft", "Rust", "FiveM", "CS2"]
+    ,
+    capabilities: {
+      autofill: "good",
+      captcha: "possible",
+      complexity: "medium",
+      notes: "Good secondary multi-game target when you want broader visibility beyond a single toplist."
+    }
   }
 ];
 
@@ -189,4 +238,14 @@ export const GAME_TEMPLATES = [
 
 export function getGameTemplate(templateKey) {
   return GAME_TEMPLATES.find((template) => template.key === templateKey) || null;
+}
+
+export function getCapabilitySummary(site) {
+  const capabilities = site?.capabilities || {};
+  return {
+    autofill: capabilities.autofill || "limited",
+    captcha: capabilities.captcha || "unknown",
+    complexity: capabilities.complexity || "medium",
+    notes: capabilities.notes || ""
+  };
 }

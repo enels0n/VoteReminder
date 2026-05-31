@@ -1,6 +1,12 @@
 import { PRESETS } from "./constants.js";
 import { buildExportPack } from "./packs.js";
-import { GAME_TEMPLATES, getSiteByKey, inferSiteByUrl } from "./site-catalog.js";
+import {
+  GAME_TEMPLATES,
+  SITE_CATALOG,
+  getCapabilitySummary,
+  getSiteByKey,
+  inferSiteByUrl
+} from "./site-catalog.js";
 import {
   createTargetId,
   formatRelativeTime,
@@ -13,6 +19,7 @@ import {
 
 const form = document.querySelector("[data-target-form]");
 const list = document.querySelector("[data-targets]");
+const siteDirectory = document.querySelector("[data-site-directory]");
 const presetContainer = document.querySelector("[data-presets]");
 const gameTemplateContainer = document.querySelector("[data-game-templates]");
 const templateDescription = document.querySelector("[data-template-description]");
@@ -74,6 +81,56 @@ function renderGameTemplates() {
     if (index === 0 && !templateDescription.textContent.trim()) {
       templateDescription.textContent = template.description || "";
     }
+  });
+}
+
+function createCapabilityChip(label, tone = "") {
+  const span = document.createElement("span");
+  span.className = `meta-chip${tone ? ` meta-chip--${tone}` : ""}`;
+  span.textContent = label;
+  return span;
+}
+
+function renderSiteDirectory() {
+  SITE_CATALOG.forEach((site) => {
+    const capabilities = getCapabilitySummary(site);
+    const article = document.createElement("article");
+    article.className = "site-card";
+
+    const chipRow = document.createElement("div");
+    chipRow.className = "site-card__chips";
+    chipRow.appendChild(
+      createCapabilityChip(
+        capabilities.autofill === "good" ? "Autofill: strong" : "Autofill: limited",
+        capabilities.autofill === "good" ? "good" : "warn"
+      )
+    );
+    chipRow.appendChild(
+      createCapabilityChip(
+        capabilities.captcha === "likely"
+          ? "Captcha: likely"
+          : capabilities.captcha === "possible"
+            ? "Captcha: possible"
+            : "Captcha: unknown",
+        capabilities.captcha === "likely" ? "warn" : ""
+      )
+    );
+    chipRow.appendChild(createCapabilityChip(`Flow: ${capabilities.complexity}`));
+
+    article.innerHTML = `
+      <div class="site-card__top">
+        <div>
+          <h3>${site.name}</h3>
+          <p class="muted">${site.game}</p>
+        </div>
+        <span class="status">${site.autofillMode}</span>
+      </div>
+      <p class="muted">${capabilities.notes}</p>
+      <p class="muted">Draft URL: ${site.urlHint}</p>
+    `;
+
+    article.appendChild(chipRow);
+    siteDirectory.appendChild(article);
   });
 }
 
@@ -566,5 +623,6 @@ snippetForm.elements.buttonLabel.value = "Add to Vote Reminder";
 
 renderPresets();
 renderGameTemplates();
+renderSiteDirectory();
 resetForm();
 render();
