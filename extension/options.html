@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vote Reminder Options</title>
+    <link rel="stylesheet" href="styles/common.css" />
+  </head>
+  <body class="options">
+    <main class="layout">
+      <section class="hero">
+        <p class="eyebrow">Chrome Extension</p>
+        <h1>Vote reminder dashboard</h1>
+        <p class="lead">
+          Keep a list of vote pages, set the cooldown for each site, and mark each vote after you submit it.
+        </p>
+      </section>
+
+      <section class="grid">
+        <article class="surface">
+          <h2>Add or edit target</h2>
+          <div class="chips" data-presets></div>
+
+          <form data-target-form class="form">
+            <input type="hidden" name="siteKey" />
+
+            <label>
+              <span>Title</span>
+              <input type="text" name="title" placeholder="My Minecraft server on hotmc.ru" required />
+            </label>
+
+            <label>
+              <span>Vote page URL</span>
+              <input type="url" name="url" placeholder="https://hotmc.ru/..." required />
+            </label>
+
+            <label>
+              <span>Vote cooldown in hours</span>
+              <input type="number" min="1" step="1" name="intervalHours" value="24" required />
+            </label>
+
+            <label>
+              <span>Nickname for autofill</span>
+              <input type="text" name="nickname" placeholder="Player nickname for this vote page" />
+            </label>
+
+            <label>
+              <span>Autofill mode</span>
+              <select name="autofillMode">
+                <option value="manual">Manual only</option>
+                <option value="prefill">Prefill nickname</option>
+                <option value="prefill+focus">Prefill and focus page</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Notes</span>
+              <textarea name="notes" rows="3" placeholder="Optional hints for the player"></textarea>
+            </label>
+
+            <label class="toggle">
+              <input type="checkbox" name="enabled" checked />
+              <span>Enable reminders for this target</span>
+            </label>
+
+            <div class="actions">
+              <button class="button" type="submit">Save target</button>
+              <button class="button button--ghost" type="button" data-reset-form>Clear form</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="surface">
+          <h2>Import server pack</h2>
+          <div class="form">
+            <label>
+              <span>Import from file</span>
+              <input type="file" accept=".json,application/json" data-pack-file />
+            </label>
+
+            <form class="form" data-import-url-form>
+              <label>
+                <span>Import from URL</span>
+                <input
+                  type="url"
+                  name="packUrl"
+                  placeholder="https://example.com/vote-pack.json"
+                  required
+                />
+              </label>
+              <button class="button" type="submit">Import URL</button>
+            </form>
+
+            <p class="empty" data-import-status>
+              Supports local JSON files, direct vote-pack links, and site-triggered import.
+            </p>
+          </div>
+        </article>
+
+        <article class="surface">
+          <h2>Reminder settings</h2>
+          <div class="form">
+            <label class="toggle">
+              <input type="checkbox" name="notificationsEnabled" />
+              <span>Enable browser notifications</span>
+            </label>
+
+            <label>
+              <span>Repeat reminder every N minutes while vote is available</span>
+              <input type="number" min="15" step="15" name="reminderRepeatMinutes" />
+            </label>
+
+            <label>
+              <span>Default snooze length in minutes</span>
+              <input type="number" min="5" step="5" name="defaultSnoozeMinutes" />
+            </label>
+          </div>
+        </article>
+      </section>
+
+      <section class="surface">
+        <h2>Tracked targets</h2>
+        <div class="stack" data-targets></div>
+      </section>
+    </main>
+
+    <script type="module" src="scripts/options.js"></script>
+  </body>
+</html>

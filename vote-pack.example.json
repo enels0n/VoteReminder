@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "packName": "My Minecraft Server Vote Pack",
+  "game": "Minecraft",
+  "author": "Server Admin",
+  "sourceUrl": "https://example.com/vote-pack.json",
+  "targets": [
+    {
+      "title": "TopG vote page",
+      "url": "https://topg.org/minecraft-servers/server-123456",
+      "intervalHours": 24,
+      "siteKey": "topg",
+      "nickname": "",
+      "autofillMode": "prefill",
+      "notes": "TopG usually remembers the nickname after the first vote."
+    },
+    {
+      "title": "HotMC vote page",
+      "url": "https://hotmc.ru/minecraft-server-123456",
+      "intervalHours": 24,
+      "siteKey": "hotmc",
+      "nickname": "",
+      "autofillMode": "prefill+focus",
+      "notes": "If the site asks again, enter your Minecraft nickname before solving captcha."
+    }
+  ]
+}

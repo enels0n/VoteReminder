@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "Vote Reminder",
+  "description": "Reminds players to vote for their favorite servers on rating sites.",
+  "version": "0.1.0",
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications",
+    "tabs",
+    "tabGroups"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "js": [
+        "scripts/site-bridge.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "js": [
+        "scripts/vote-page-helper.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "service_worker": "scripts/background.js",
+    "type": "module"
+  },
+  "icons": {
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_title": "Vote Reminder",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icon128.png"
+    }
+  },
+  "options_page": "options.html"
+}

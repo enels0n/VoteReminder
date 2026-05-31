@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vote Session</title>
+    <link rel="stylesheet" href="styles/common.css" />
+  </head>
+  <body class="options">
+    <main class="layout">
+      <section class="hero hero--session">
+        <div>
+          <p class="eyebrow">Voting Session</p>
+          <h1>Vote checklist</h1>
+          <p class="lead">
+            Work through your current vote pages, open tabs when needed, and mark each site when the vote is done.
+          </p>
+        </div>
+        <div class="actions">
+          <button class="button button--ghost" data-refresh-session>Refresh</button>
+          <button class="button" data-start-all>Open all due tabs</button>
+        </div>
+      </section>
+
+      <section class="grid grid--session">
+        <article class="surface">
+          <h2>Progress</h2>
+          <div class="session-progress">
+            <div class="session-progress__bar">
+              <span data-progress-fill></span>
+            </div>
+            <p class="lead" data-progress-text></p>
+            <p class="muted" data-session-caption></p>
+          </div>
+        </article>
+
+        <article class="surface">
+          <h2>Quick notes</h2>
+          <div class="stack">
+            <p class="muted">Autofill can prepare the nickname field, but captcha stays manual by design.</p>
+            <p class="muted">Use `I voted` only after the site confirms the vote, so the cooldown stays accurate.</p>
+            <p class="muted" data-session-status>Ready.</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="surface">
+        <h2>Current targets</h2>
+        <p class="empty" data-empty-session hidden>No active vote targets for this session.</p>
+        <div class="stack" data-session-list></div>
+      </section>
+    </main>
+
+    <script type="module" src="scripts/session.js"></script>
+  </body>
+</html>

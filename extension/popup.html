@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vote Reminder</title>
+    <link rel="stylesheet" href="styles/common.css" />
+  </head>
+  <body class="popup">
+    <main class="panel">
+      <header class="panel__header">
+        <div>
+          <p class="eyebrow">Vote Reminder</p>
+          <h1>Ready votes</h1>
+        </div>
+        <button class="button button--ghost" data-open-options>Options</button>
+      </header>
+
+      <section class="toolbar">
+        <button class="button" data-run-check>Check now</button>
+        <button class="button button--ghost" data-start-session>Start session</button>
+      </section>
+
+      <p class="empty" data-session-status hidden></p>
+
+      <p class="empty" data-empty-state hidden>
+        No targets yet. Open Options and add links to your server pages on voting sites.
+      </p>
+
+      <section class="stack" data-target-list></section>
+    </main>
+
+    <script type="module" src="scripts/popup.js"></script>
+  </body>
+</html>
