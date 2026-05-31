@@ -21,6 +21,7 @@ Chrome extension for reminding players to vote for favorite servers on rating si
 - Store a nickname and autofill mode per vote page for supported sites.
 - Auto-detect supported sites from the vote URL and suggest site-specific autofill behavior.
 - Show a built-in site directory with autofill, captcha, and flow hints for each monitoring site.
+- Mark which sites are better suited for compact `Lite` packs versus more manual-heavy flows.
 
 ## Load in Chrome
 

@@ -116,6 +116,12 @@ function renderSiteDirectory() {
       )
     );
     chipRow.appendChild(createCapabilityChip(`Flow: ${capabilities.complexity}`));
+    if (capabilities.recommendedForLite) {
+      chipRow.appendChild(createCapabilityChip("Recommended for Lite", "good"));
+    }
+    if (capabilities.manualHeavy) {
+      chipRow.appendChild(createCapabilityChip("Manual-heavy", "warn"));
+    }
 
     article.innerHTML = `
       <div class="site-card__top">

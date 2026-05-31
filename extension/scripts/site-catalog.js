@@ -7,6 +7,7 @@ export const SITE_CATALOG = [
     urlHint: "https://hotmc.ru/minecraft-server-12345",
     autofillMode: "prefill+focus",
     domains: ["hotmc.ru"],
+    recommendedForLite: true,
     capabilities: {
       autofill: "good",
       captcha: "likely",
@@ -22,6 +23,7 @@ export const SITE_CATALOG = [
     urlHint: "https://topg.org/minecraft-servers/server-12345",
     autofillMode: "prefill",
     domains: ["topg.org"],
+    recommendedForLite: true,
     capabilities: {
       autofill: "good",
       captcha: "possible",
@@ -37,6 +39,7 @@ export const SITE_CATALOG = [
     urlHint: "https://minecraftservers.org/server/12345",
     autofillMode: "prefill",
     domains: ["minecraftservers.org"],
+    recommendedForLite: true,
     capabilities: {
       autofill: "good",
       captcha: "possible",
@@ -52,6 +55,7 @@ export const SITE_CATALOG = [
     urlHint: "https://minecraft-mp.com/server/12345/vote/",
     autofillMode: "prefill+focus",
     domains: ["minecraft-mp.com"],
+    recommendedForLite: true,
     capabilities: {
       autofill: "good",
       captcha: "likely",
@@ -67,6 +71,7 @@ export const SITE_CATALOG = [
     urlHint: "https://www.planetminecraft.com/server/example/",
     autofillMode: "manual",
     domains: ["planetminecraft.com"],
+    manualHeavy: true,
     capabilities: {
       autofill: "limited",
       captcha: "unknown",
@@ -82,6 +87,7 @@ export const SITE_CATALOG = [
     urlHint: "https://serverlist.cc/server/example/",
     autofillMode: "manual",
     domains: ["serverlist.cc"],
+    manualHeavy: true,
     capabilities: {
       autofill: "limited",
       captcha: "unknown",
@@ -98,6 +104,7 @@ export const SITE_CATALOG = [
     autofillMode: "prefill+focus",
     domains: ["trackyserver.com", "www.trackyserver.com"],
     supportedGames: ["Minecraft", "Rust", "FiveM", "CS2"],
+    recommendedForLite: true,
     capabilities: {
       autofill: "good",
       captcha: "possible",
@@ -113,8 +120,7 @@ export const SITE_CATALOG = [
     urlHint: "https://gamemonitoring.net/minecraft/servers/123456/vote",
     autofillMode: "prefill+focus",
     domains: ["gamemonitoring.net"],
-    supportedGames: ["Minecraft", "Rust", "FiveM", "CS2"]
-    ,
+    supportedGames: ["Minecraft", "Rust", "FiveM", "CS2"],
     capabilities: {
       autofill: "good",
       captcha: "possible",
@@ -246,6 +252,8 @@ export function getCapabilitySummary(site) {
     autofill: capabilities.autofill || "limited",
     captcha: capabilities.captcha || "unknown",
     complexity: capabilities.complexity || "medium",
-    notes: capabilities.notes || ""
+    notes: capabilities.notes || "",
+    recommendedForLite: Boolean(site?.recommendedForLite),
+    manualHeavy: Boolean(site?.manualHeavy)
   };
 }
