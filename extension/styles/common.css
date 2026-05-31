@@ -149,6 +149,10 @@ h3 {
   gap: 14px;
 }
 
+.chips {
+  margin-bottom: 12px;
+}
+
 .card,
 .target-row {
   padding: 16px;

@@ -60,7 +60,8 @@ export const SITE_CATALOG = [
     intervalHours: 24,
     urlHint: "https://www.trackyserver.com/server/1234567",
     autofillMode: "prefill+focus",
-    domains: ["trackyserver.com", "www.trackyserver.com"]
+    domains: ["trackyserver.com", "www.trackyserver.com"],
+    supportedGames: ["Minecraft", "Rust", "FiveM", "CS2"]
   },
   {
     key: "gamemonitoring",
@@ -69,7 +70,8 @@ export const SITE_CATALOG = [
     intervalHours: 24,
     urlHint: "https://gamemonitoring.net/minecraft/servers/123456/vote",
     autofillMode: "prefill+focus",
-    domains: ["gamemonitoring.net"]
+    domains: ["gamemonitoring.net"],
+    supportedGames: ["Minecraft", "Rust", "FiveM", "CS2"]
   }
 ];
 
@@ -102,4 +104,44 @@ export function inferSiteByUrl(url) {
 
 export function getSiteByKey(siteKey) {
   return SITE_CATALOG.find((site) => site.key === siteKey) || null;
+}
+
+export const GAME_TEMPLATES = [
+  {
+    key: "minecraft",
+    label: "Minecraft",
+    packName: "Minecraft server vote pack",
+    siteKeys: [
+      "hotmc",
+      "topg",
+      "minecraftservers",
+      "minecraftmp",
+      "planetminecraft",
+      "serverlistcc",
+      "trackyserver",
+      "gamemonitoring"
+    ]
+  },
+  {
+    key: "rust",
+    label: "Rust",
+    packName: "Rust server vote pack",
+    siteKeys: ["trackyserver", "gamemonitoring"]
+  },
+  {
+    key: "fivem",
+    label: "FiveM",
+    packName: "FiveM server vote pack",
+    siteKeys: ["trackyserver", "gamemonitoring"]
+  },
+  {
+    key: "cs2",
+    label: "CS2",
+    packName: "CS2 server vote pack",
+    siteKeys: ["trackyserver", "gamemonitoring"]
+  }
+];
+
+export function getGameTemplate(templateKey) {
+  return GAME_TEMPLATES.find((template) => template.key === templateKey) || null;
 }

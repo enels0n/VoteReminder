@@ -14,6 +14,7 @@ Chrome extension for reminding players to vote for favorite servers on rating si
 - Export the current tracked targets as a reusable `vote-pack.json` for players.
 - Preview the generated `vote-pack.json` live before downloading or copying it.
 - Generate a ready-to-paste website button/snippet for importing the pack from a server site.
+- Bootstrap a pack quickly from built-in game templates for Minecraft, Rust, FiveM, and CS2.
 - Accept import requests directly from a server website when the extension is installed.
 - Start a vote session that opens all currently available vote pages in one tab group.
 - Show a dedicated checklist page for the active voting session with progress and quick actions.

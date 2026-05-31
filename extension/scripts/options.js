@@ -1,6 +1,6 @@
 import { PRESETS } from "./constants.js";
 import { buildExportPack } from "./packs.js";
-import { inferSiteByUrl } from "./site-catalog.js";
+import { GAME_TEMPLATES, getSiteByKey, inferSiteByUrl } from "./site-catalog.js";
 import {
   createTargetId,
   formatRelativeTime,
@@ -14,6 +14,8 @@ import {
 const form = document.querySelector("[data-target-form]");
 const list = document.querySelector("[data-targets]");
 const presetContainer = document.querySelector("[data-presets]");
+const gameTemplateContainer = document.querySelector("[data-game-templates]");
+const templateStatus = document.querySelector("[data-template-status]");
 const resetButton = document.querySelector("[data-reset-form]");
 const packFileInput = document.querySelector("[data-pack-file]");
 const importUrlForm = document.querySelector("[data-import-url-form]");
@@ -56,6 +58,19 @@ function renderPresets() {
   });
 }
 
+function renderGameTemplates() {
+  GAME_TEMPLATES.forEach((template) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "chip";
+    button.textContent = template.label;
+    button.addEventListener("click", () => {
+      applyGameTemplate(template.key);
+    });
+    gameTemplateContainer.appendChild(button);
+  });
+}
+
 function syncDerivedFieldsFromUrl() {
   const inferredSite = inferSiteByUrl(form.elements.url.value);
   if (!inferredSite) {
@@ -90,6 +105,72 @@ function escapeHtml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
+}
+
+function sanitizeFileName(value) {
+  return (
+    String(value || "vote-pack")
+      .trim()
+      .replace(/[^a-z0-9-_]+/gi, "-")
+      .replace(/^-+|-+$/g, "") || "vote-pack"
+  );
+}
+
+function buildDraftTargetFromSite(site, templateLabel) {
+  const supportedGame = site.supportedGames?.includes(templateLabel)
+    ? templateLabel
+    : site.game;
+
+  return {
+    id: createTargetId(),
+    title: `${templateLabel} on ${site.name}`,
+    url: site.urlHint,
+    intervalHours: site.intervalHours,
+    siteKey: site.key,
+    nickname: "",
+    autofillMode: site.autofillMode || "manual",
+    notes: "Replace this placeholder URL with your real vote page before exporting the pack.",
+    enabled: true,
+    game: supportedGame,
+    packName: "",
+    importSource: "",
+    lastVotedAt: null,
+    lastReminderAt: null,
+    snoozedUntil: null
+  };
+}
+
+async function applyGameTemplate(templateKey) {
+  const template = GAME_TEMPLATES.find((item) => item.key === templateKey);
+  if (!template) {
+    setStatus(templateStatus, "Selected game template was not found.", true);
+    return;
+  }
+
+  const { targets } = await getStoredData();
+  const existingSiteKeys = new Set(targets.map((target) => `${target.siteKey}:${target.game}`));
+  const draftTargets = template.siteKeys
+    .map((siteKey) => getSiteByKey(siteKey))
+    .filter(Boolean)
+    .map((site) => buildDraftTargetFromSite(site, template.label))
+    .filter((target) => !existingSiteKeys.has(`${target.siteKey}:${target.game}`));
+
+  if (!draftTargets.length) {
+    setStatus(templateStatus, `All ${template.label} template targets are already in your list.`);
+    return;
+  }
+
+  await saveTargets([...draftTargets, ...targets]);
+
+  if (!exportPackForm.elements.packName.value.trim()) {
+    exportPackForm.elements.packName.value = template.packName;
+  }
+  if (!exportPackForm.elements.game.value.trim()) {
+    exportPackForm.elements.game.value = template.label;
+  }
+
+  setStatus(templateStatus, `Added ${draftTargets.length} draft ${template.label} targets. Replace the placeholder URLs before exporting.`);
+  await render();
 }
 
 function createRow(target) {
@@ -305,9 +386,15 @@ async function buildPackJson() {
 }
 
 function buildSnippetCode() {
-  const packUrl = String(snippetForm.elements.packUrl.value || exportPackForm.elements.sourceUrl.value || "").trim();
-  const installUrl = String(snippetForm.elements.installUrl.value || "https://chromewebstore.google.com/").trim();
-  const buttonLabel = String(snippetForm.elements.buttonLabel.value || "Add to Vote Reminder").trim();
+  const packUrl = String(
+    snippetForm.elements.packUrl.value || exportPackForm.elements.sourceUrl.value || ""
+  ).trim();
+  const installUrl = String(
+    snippetForm.elements.installUrl.value || "https://chromewebstore.google.com/"
+  ).trim();
+  const buttonLabel = String(
+    snippetForm.elements.buttonLabel.value || "Add to Vote Reminder"
+  ).trim();
 
   if (!packUrl) {
     throw new Error("Enter a vote pack URL to generate the website snippet.");
@@ -387,10 +474,7 @@ async function handleExportDownload(event) {
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
-    const fileName = `${String(exportPackForm.elements.packName.value || "vote-pack")
-      .trim()
-      .replace(/[^a-z0-9-_]+/gi, "-")
-      .replace(/^-+|-+$/g, "") || "vote-pack"}.json`;
+    const fileName = `${sanitizeFileName(exportPackForm.elements.packName.value)}.json`;
 
     anchor.href = url;
     anchor.download = fileName;
@@ -400,7 +484,9 @@ async function handleExportDownload(event) {
     setStatus(exportStatus, `Downloaded ${fileName}.`);
     exportPreview.value = json;
     if (!snippetForm.elements.packUrl.value.trim()) {
-      snippetForm.elements.packUrl.value = String(exportPackForm.elements.sourceUrl.value || "").trim();
+      snippetForm.elements.packUrl.value = String(
+        exportPackForm.elements.sourceUrl.value || ""
+      ).trim();
       updateSnippetPreview();
     }
   } catch (error) {
@@ -439,7 +525,8 @@ async function render() {
   snoozeMinutesInput.value = settings.defaultSnoozeMinutes;
 
   if (!targets.length) {
-    list.innerHTML = '<p class="empty">No vote targets yet. Add your first server page above or import a server pack.</p>';
+    list.innerHTML =
+      '<p class="empty">No vote targets yet. Add your first server page above, import a pack, or start from a game template.</p>';
   } else {
     targets
       .slice()
@@ -469,5 +556,6 @@ snippetForm.elements.installUrl.value = "https://chromewebstore.google.com/";
 snippetForm.elements.buttonLabel.value = "Add to Vote Reminder";
 
 renderPresets();
+renderGameTemplates();
 resetForm();
 render();
