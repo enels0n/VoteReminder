@@ -21,6 +21,7 @@ const importStatus = document.querySelector("[data-import-status]");
 const exportPackForm = document.querySelector("[data-export-pack-form]");
 const copyPackButton = document.querySelector("[data-copy-pack]");
 const exportStatus = document.querySelector("[data-export-status]");
+const exportPreview = document.querySelector("[data-export-preview]");
 const notificationsToggle = document.querySelector("[name='notificationsEnabled']");
 const repeatMinutesInput = document.querySelector("[name='reminderRepeatMinutes']");
 const snoozeMinutesInput = document.querySelector("[name='defaultSnoozeMinutes']");
@@ -291,6 +292,20 @@ async function buildPackJson() {
   return JSON.stringify(pack, null, 2);
 }
 
+async function updateExportPreview() {
+  try {
+    exportPreview.value = await buildPackJson();
+    exportPreview.dataset.hasError = "false";
+    if (!exportStatus.textContent || exportStatus.textContent.includes("preview")) {
+      setStatus(exportStatus, "Live preview is up to date.");
+    }
+  } catch (error) {
+    exportPreview.value = "";
+    exportPreview.dataset.hasError = "true";
+    setStatus(exportStatus, error?.message || "Could not build vote pack preview.", true);
+  }
+}
+
 async function handleExportDownload(event) {
   event.preventDefault();
 
@@ -310,6 +325,7 @@ async function handleExportDownload(event) {
     URL.revokeObjectURL(url);
 
     setStatus(exportStatus, `Downloaded ${fileName}.`);
+    exportPreview.value = json;
   } catch (error) {
     setStatus(exportStatus, error?.message || "Could not export vote pack.", true);
   }
@@ -319,6 +335,7 @@ async function handleCopyPack() {
   try {
     const json = await buildPackJson();
     await navigator.clipboard.writeText(json);
+    exportPreview.value = json;
     setStatus(exportStatus, "Vote pack JSON copied to clipboard.");
   } catch (error) {
     setStatus(exportStatus, error?.message || "Could not copy vote pack JSON.", true);
@@ -335,13 +352,14 @@ async function render() {
 
   if (!targets.length) {
     list.innerHTML = '<p class="empty">No vote targets yet. Add your first server page above or import a server pack.</p>';
-    return;
+  } else {
+    targets
+      .slice()
+      .sort((left, right) => Number(isTargetDue(right)) - Number(isTargetDue(left)))
+      .forEach((target) => list.appendChild(createRow(target)));
   }
 
-  targets
-    .slice()
-    .sort((left, right) => Number(isTargetDue(right)) - Number(isTargetDue(left)))
-    .forEach((target) => list.appendChild(createRow(target)));
+  await updateExportPreview();
 }
 
 form.addEventListener("submit", saveFormTarget);
@@ -350,6 +368,7 @@ resetButton.addEventListener("click", resetForm);
 packFileInput.addEventListener("change", handlePackFileChange);
 importUrlForm.addEventListener("submit", handleImportUrl);
 exportPackForm.addEventListener("submit", handleExportDownload);
+exportPackForm.addEventListener("input", updateExportPreview);
 copyPackButton.addEventListener("click", handleCopyPack);
 notificationsToggle.addEventListener("change", savePreferenceChanges);
 repeatMinutesInput.addEventListener("change", savePreferenceChanges);

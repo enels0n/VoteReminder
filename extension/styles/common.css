@@ -223,6 +223,14 @@ textarea {
   color: var(--text);
 }
 
+textarea[readonly] {
+  min-height: 260px;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.45;
+  white-space: pre;
+}
+
 .toggle {
   grid-template-columns: auto 1fr;
   align-items: center;
