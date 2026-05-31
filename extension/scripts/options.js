@@ -22,6 +22,10 @@ const exportPackForm = document.querySelector("[data-export-pack-form]");
 const copyPackButton = document.querySelector("[data-copy-pack]");
 const exportStatus = document.querySelector("[data-export-status]");
 const exportPreview = document.querySelector("[data-export-preview]");
+const snippetForm = document.querySelector("[data-snippet-form]");
+const copySnippetButton = document.querySelector("[data-copy-snippet]");
+const snippetPreview = document.querySelector("[data-snippet-preview]");
+const snippetStatus = document.querySelector("[data-snippet-status]");
 const notificationsToggle = document.querySelector("[name='notificationsEnabled']");
 const repeatMinutesInput = document.querySelector("[name='reminderRepeatMinutes']");
 const snoozeMinutesInput = document.querySelector("[name='defaultSnoozeMinutes']");
@@ -78,6 +82,14 @@ function resetForm() {
   form.elements.enabled.checked = true;
   form.elements.siteKey.value = "";
   form.elements.autofillMode.value = "manual";
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 function createRow(target) {
@@ -292,6 +304,57 @@ async function buildPackJson() {
   return JSON.stringify(pack, null, 2);
 }
 
+function buildSnippetCode() {
+  const packUrl = String(snippetForm.elements.packUrl.value || exportPackForm.elements.sourceUrl.value || "").trim();
+  const installUrl = String(snippetForm.elements.installUrl.value || "https://chromewebstore.google.com/").trim();
+  const buttonLabel = String(snippetForm.elements.buttonLabel.value || "Add to Vote Reminder").trim();
+
+  if (!packUrl) {
+    throw new Error("Enter a vote pack URL to generate the website snippet.");
+  }
+
+  return `<button id="vote-reminder-button" type="button">${escapeHtml(buttonLabel)}</button>
+
+<script>
+  (function () {
+    var voteReminderInstalled = false;
+    var packUrl = ${JSON.stringify(packUrl)};
+    var installUrl = ${JSON.stringify(installUrl)};
+    var button = document.getElementById("vote-reminder-button");
+
+    window.addEventListener("VoteReminderAvailable", function () {
+      voteReminderInstalled = true;
+    });
+
+    window.addEventListener("VoteReminderImportResult", function (event) {
+      if (event.detail && event.detail.ok) {
+        console.log("Vote pack imported into Vote Reminder.");
+        return;
+      }
+
+      console.warn((event.detail && event.detail.error) || "Could not import vote pack.");
+    });
+
+    button.addEventListener("click", function () {
+      if (!voteReminderInstalled) {
+        window.location.href = installUrl;
+        return;
+      }
+
+      window.postMessage(
+        {
+          type: "VOTE_REMINDER_IMPORT",
+          payload: {
+            url: packUrl
+          }
+        },
+        window.location.origin
+      );
+    });
+  })();
+</script>`;
+}
+
 async function updateExportPreview() {
   try {
     exportPreview.value = await buildPackJson();
@@ -303,6 +366,16 @@ async function updateExportPreview() {
     exportPreview.value = "";
     exportPreview.dataset.hasError = "true";
     setStatus(exportStatus, error?.message || "Could not build vote pack preview.", true);
+  }
+}
+
+function updateSnippetPreview() {
+  try {
+    snippetPreview.value = buildSnippetCode();
+    setStatus(snippetStatus, "Website snippet is ready to copy.");
+  } catch (error) {
+    snippetPreview.value = "";
+    setStatus(snippetStatus, error?.message || "Could not build website snippet.", true);
   }
 }
 
@@ -326,6 +399,10 @@ async function handleExportDownload(event) {
 
     setStatus(exportStatus, `Downloaded ${fileName}.`);
     exportPreview.value = json;
+    if (!snippetForm.elements.packUrl.value.trim()) {
+      snippetForm.elements.packUrl.value = String(exportPackForm.elements.sourceUrl.value || "").trim();
+      updateSnippetPreview();
+    }
   } catch (error) {
     setStatus(exportStatus, error?.message || "Could not export vote pack.", true);
   }
@@ -339,6 +416,17 @@ async function handleCopyPack() {
     setStatus(exportStatus, "Vote pack JSON copied to clipboard.");
   } catch (error) {
     setStatus(exportStatus, error?.message || "Could not copy vote pack JSON.", true);
+  }
+}
+
+async function handleCopySnippet() {
+  try {
+    const snippet = buildSnippetCode();
+    await navigator.clipboard.writeText(snippet);
+    snippetPreview.value = snippet;
+    setStatus(snippetStatus, "Website snippet copied to clipboard.");
+  } catch (error) {
+    setStatus(snippetStatus, error?.message || "Could not copy website snippet.", true);
   }
 }
 
@@ -360,6 +448,7 @@ async function render() {
   }
 
   await updateExportPreview();
+  updateSnippetPreview();
 }
 
 form.addEventListener("submit", saveFormTarget);
@@ -370,9 +459,14 @@ importUrlForm.addEventListener("submit", handleImportUrl);
 exportPackForm.addEventListener("submit", handleExportDownload);
 exportPackForm.addEventListener("input", updateExportPreview);
 copyPackButton.addEventListener("click", handleCopyPack);
+snippetForm.addEventListener("input", updateSnippetPreview);
+copySnippetButton.addEventListener("click", handleCopySnippet);
 notificationsToggle.addEventListener("change", savePreferenceChanges);
 repeatMinutesInput.addEventListener("change", savePreferenceChanges);
 snoozeMinutesInput.addEventListener("change", savePreferenceChanges);
+
+snippetForm.elements.installUrl.value = "https://chromewebstore.google.com/";
+snippetForm.elements.buttonLabel.value = "Add to Vote Reminder";
 
 renderPresets();
 resetForm();

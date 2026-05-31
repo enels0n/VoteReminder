@@ -143,6 +143,45 @@
         </article>
 
         <article class="surface">
+          <h2>Website snippet</h2>
+          <form class="form" data-snippet-form>
+            <label>
+              <span>Vote pack URL</span>
+              <input type="url" name="packUrl" placeholder="https://example.com/vote-pack.json" />
+            </label>
+
+            <label>
+              <span>Install URL</span>
+              <input type="url" name="installUrl" placeholder="https://chromewebstore.google.com/" />
+            </label>
+
+            <label>
+              <span>Button label</span>
+              <input type="text" name="buttonLabel" placeholder="Add to Vote Reminder" />
+            </label>
+
+            <div class="actions">
+              <button class="button button--ghost" type="button" data-copy-snippet>Copy snippet</button>
+            </div>
+
+            <label>
+              <span>Embed snippet</span>
+              <textarea
+                rows="16"
+                readonly
+                spellcheck="false"
+                data-snippet-preview
+                placeholder="Website integration snippet will appear here"
+              ></textarea>
+            </label>
+
+            <p class="empty" data-snippet-status>
+              Generates a ready-to-paste website button with extension detection and fallback.
+            </p>
+          </form>
+        </article>
+
+        <article class="surface">
           <h2>Reminder settings</h2>
           <div class="form">
             <label class="toggle">
