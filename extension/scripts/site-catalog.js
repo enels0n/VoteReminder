@@ -108,11 +108,25 @@ export function getSiteByKey(siteKey) {
 
 export const GAME_TEMPLATES = [
   {
+    key: "minecraft-ru-lite",
+    label: "Minecraft RU Lite",
+    packName: "Minecraft RU lite vote pack",
+    description: "Compact Russian-facing starter pack with the most practical vote pages.",
+    siteKeys: ["hotmc", "topg", "minecraftmp"]
+  },
+  {
     key: "minecraft-ru",
     label: "Minecraft RU",
     packName: "Minecraft RU server vote pack",
     description: "Russian-facing monitoring mix with local and global listings.",
     siteKeys: ["hotmc", "topg", "minecraftmp", "trackyserver", "gamemonitoring"]
+  },
+  {
+    key: "minecraft-global-lite",
+    label: "Minecraft Global Lite",
+    packName: "Minecraft global lite vote pack",
+    description: "Smaller global Minecraft pack for players who should not be overwhelmed.",
+    siteKeys: ["topg", "minecraftservers", "minecraftmp"]
   },
   {
     key: "minecraft-global",
@@ -130,6 +144,13 @@ export const GAME_TEMPLATES = [
     ]
   },
   {
+    key: "rust-lite",
+    label: "Rust Lite",
+    packName: "Rust lite vote pack",
+    description: "Shortest Rust starter pack focused on one shared toplist.",
+    siteKeys: ["trackyserver"]
+  },
+  {
     key: "rust",
     label: "Rust",
     packName: "Rust server vote pack",
@@ -137,11 +158,25 @@ export const GAME_TEMPLATES = [
     siteKeys: ["trackyserver", "gamemonitoring"]
   },
   {
+    key: "fivem-lite",
+    label: "FiveM Lite",
+    packName: "FiveM lite vote pack",
+    description: "Minimal FiveM draft set for communities that want fewer steps.",
+    siteKeys: ["trackyserver"]
+  },
+  {
     key: "fivem",
     label: "FiveM",
     packName: "FiveM server vote pack",
     description: "Draft set for FiveM communities using major multi-game toplists.",
     siteKeys: ["trackyserver", "gamemonitoring"]
+  },
+  {
+    key: "cs2-lite",
+    label: "CS2 Lite",
+    packName: "CS2 lite vote pack",
+    description: "Compact Counter-Strike 2 starter pack with one shared toplist.",
+    siteKeys: ["trackyserver"]
   },
   {
     key: "cs2",
