@@ -15,6 +15,7 @@ const form = document.querySelector("[data-target-form]");
 const list = document.querySelector("[data-targets]");
 const presetContainer = document.querySelector("[data-presets]");
 const gameTemplateContainer = document.querySelector("[data-game-templates]");
+const templateDescription = document.querySelector("[data-template-description]");
 const templateStatus = document.querySelector("[data-template-status]");
 const resetButton = document.querySelector("[data-reset-form]");
 const packFileInput = document.querySelector("[data-pack-file]");
@@ -59,15 +60,20 @@ function renderPresets() {
 }
 
 function renderGameTemplates() {
-  GAME_TEMPLATES.forEach((template) => {
+  GAME_TEMPLATES.forEach((template, index) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "chip";
     button.textContent = template.label;
     button.addEventListener("click", () => {
+      templateDescription.textContent = template.description || "";
       applyGameTemplate(template.key);
     });
     gameTemplateContainer.appendChild(button);
+
+    if (index === 0 && !templateDescription.textContent.trim()) {
+      templateDescription.textContent = template.description || "";
+    }
   });
 }
 
@@ -169,7 +175,10 @@ async function applyGameTemplate(templateKey) {
     exportPackForm.elements.game.value = template.label;
   }
 
-  setStatus(templateStatus, `Added ${draftTargets.length} draft ${template.label} targets. Replace the placeholder URLs before exporting.`);
+  setStatus(
+    templateStatus,
+    `Added ${draftTargets.length} draft ${template.label} targets. Replace the placeholder URLs before exporting.`
+  );
   await render();
 }
 

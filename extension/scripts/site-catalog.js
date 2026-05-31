@@ -108,11 +108,18 @@ export function getSiteByKey(siteKey) {
 
 export const GAME_TEMPLATES = [
   {
-    key: "minecraft",
-    label: "Minecraft",
-    packName: "Minecraft server vote pack",
+    key: "minecraft-ru",
+    label: "Minecraft RU",
+    packName: "Minecraft RU server vote pack",
+    description: "Russian-facing monitoring mix with local and global listings.",
+    siteKeys: ["hotmc", "topg", "minecraftmp", "trackyserver", "gamemonitoring"]
+  },
+  {
+    key: "minecraft-global",
+    label: "Minecraft Global",
+    packName: "Minecraft global server vote pack",
+    description: "Broader English-speaking discovery set for Minecraft servers.",
     siteKeys: [
-      "hotmc",
       "topg",
       "minecraftservers",
       "minecraftmp",
@@ -126,18 +133,21 @@ export const GAME_TEMPLATES = [
     key: "rust",
     label: "Rust",
     packName: "Rust server vote pack",
+    description: "Multi-game sites that commonly list Rust servers.",
     siteKeys: ["trackyserver", "gamemonitoring"]
   },
   {
     key: "fivem",
     label: "FiveM",
     packName: "FiveM server vote pack",
+    description: "Draft set for FiveM communities using major multi-game toplists.",
     siteKeys: ["trackyserver", "gamemonitoring"]
   },
   {
     key: "cs2",
     label: "CS2",
     packName: "CS2 server vote pack",
+    description: "Starter pack for Counter-Strike 2 using shared server toplists.",
     siteKeys: ["trackyserver", "gamemonitoring"]
   }
 ];
